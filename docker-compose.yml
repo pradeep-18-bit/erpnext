@@ -34,7 +34,7 @@ services:
     networks:
       - erpnext-network
 
-  backend:
+    backend:
     image: frappe/erpnext:v14
     container_name: backend
     restart: always
@@ -49,14 +49,15 @@ services:
       MYSQL_ROOT_PASSWORD: root
       ADMIN_PASSWORD: admin
       INSTALL_APPS: erpnext
-      REDIS_CACHE: redis-cache:6379
-      REDIS_QUEUE: redis-queue:6379
-      REDIS_SOCKETIO: redis-socketio:6379
+      REDIS_CACHE: redis://redis-cache:6379
+      REDIS_QUEUE: redis://redis-queue:6379
+      REDIS_SOCKETIO: redis://redis-socketio:6379
       MARIADB_HOST: mariadb
     volumes:
       - sites:/home/frappe/frappe-bench/sites
     networks:
       - erpnext-network
+
 
   nginx:
     image: frappe/erpnext-nginx:edge  # ✅ Correct tag (v14 doesn’t exist)
