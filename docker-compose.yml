@@ -1,40 +1,80 @@
-version: "3.9"
 services:
   mariadb:
     image: mariadb:10.6
+    container_name: mariadb
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: frappe
       MYSQL_PASSWORD: frappe
-      MYSQL_DATABASE: _internal
+      MYSQL_DATABASE: erpnext
     volumes:
       - mariadb_data:/var/lib/mysql
+    networks:
+      - erpnext-network
 
   redis-cache:
     image: redis:6-alpine
+    container_name: redis-cache
+    restart: always
+    networks:
+      - erpnext-network
+
   redis-queue:
     image: redis:6-alpine
+    container_name: redis-queue
+    restart: always
+    networks:
+      - erpnext-network
+
   redis-socketio:
     image: redis:6-alpine
+    container_name: redis-socketio
+    restart: always
+    networks:
+      - erpnext-network
 
   backend:
     image: frappe/erpnext:v14
-    depends_on: [mariadb, redis-cache, redis-queue, redis-socketio]
+    container_name: backend
+    restart: always
+    depends_on:
+      - mariadb
+      - redis-cache
+      - redis-queue
+      - redis-socketio
     environment:
+      SITE_NAME: erp.mysite.local
+      DB_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: root
+      ADMIN_PASSWORD: admin
+      INSTALL_APPS: erpnext
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
       REDIS_SOCKETIO: redis-socketio:6379
+      MARIADB_HOST: mariadb
     volumes:
       - sites:/home/frappe/frappe-bench/sites
+    networks:
+      - erpnext-network
 
   nginx:
-    image: frappe/erpnext-nginx:v14
+    image: frappe/erpnext-nginx:edge  # ✅ Correct tag (v14 doesn’t exist)
+    container_name: nginx
+    restart: always
+    depends_on:
+      - backend
     ports:
-      - "8088:8080"
-    depends_on: [backend]
+      - "80:8080"
     volumes:
       - sites:/usr/share/nginx/html/sites
+    networks:
+      - erpnext-network
 
 volumes:
   mariadb_data:
   sites:
+
+networks:
+  erpnext-network:
+
