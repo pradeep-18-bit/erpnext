@@ -1,5 +1,5 @@
 # Base ERPNext v14 image from Frappe
-FROM frappe/erpnext:v14.0.0
+FROM frappe/erpnext:v14
 
 # Optional: You can add your own assets, scripts, or config later
 # COPY ./custom_app /home/frappe/frappe-bench/apps/custom_app
