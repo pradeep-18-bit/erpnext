@@ -1,0 +1,7 @@
+# Ignore Docker volumes and logs
+volumes/
+*.log
+*.pid
+*.tmp
+.env
+__pycache__/
